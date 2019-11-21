@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -27,14 +29,34 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }*/
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
-    int counter =0;
+    boolean startCanny  = false;
+    Button Canny;
+    /*public void Canny(View Button){
+
+        if (startCanny == false){
+            startCanny = true;
+        }
+
+        else{
+
+            startCanny = false;
+
+
+        }
+
+
+
+
+    }
+*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Canny = (Button)findViewById(R.id.button);
         cameraBridgeViewBase = (JavaCameraView) findViewById(R.id.cameraView);
-        cameraBridgeViewBase.setVisibility(View.VISIBLE);
+        cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
         cameraBridgeViewBase.setCvCameraViewListener(this);
 
         baseLoaderCallback = new BaseLoaderCallback(this) {
@@ -51,16 +73,39 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         };
+
+        Canny.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (startCanny == false){
+                    startCanny = true;
+                }
+
+                else{
+
+                    startCanny = false;
+
+
+                }
+
+            }
+        });
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Mat frame = inputFrame.rgba();
-        if(counter%2==0){
+       Mat frame = inputFrame.rgba();
+        /*if(counter%2==0){
             Core.flip(frame,frame,1);
             Imgproc.cvtColor(frame,frame,Imgproc.COLOR_RGB2GRAY );
         }
         counter = counter+1;
+        return frame;*/
+        if(startCanny ==true){
+            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
+            Imgproc.Canny(frame, frame, 100, 80);
+        }
         return frame;
     }
 
